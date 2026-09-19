@@ -1104,7 +1104,7 @@ function renderLetterPanel(){
 const KI_ENDPOINT='https://startklar-ki.can-delibasi2.workers.dev';
 // Wie oft die KI pro Paket genutzt werden darf:
 // Stripe-Payment-Link für das KI-Paket (1,99 €). Leer = Demo-Modus ohne echte Zahlung.
-const STRIPE_KI_LINK='';
+const STRIPE_KI_LINK='https://buy.stripe.com/14A7sMaI31DvbU3aEE0ZW00';
 const PLANS={free:{name:'Kostenlos',ki:0},ki:{name:'KI-Paket',ki:3},schule:{name:'Schul-Lizenz',ki:0}};
 // Codes: SK-… = Schule (KI unbegrenzt), KI-… = KI-Paket (3 Nutzungen). Mit KI_ENDPOINT prüft der Worker, sonst Demo.
 let plan=Object.assign({tier:'free',credits:0},store.get('plan',{}));
