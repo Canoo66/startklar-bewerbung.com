@@ -775,7 +775,7 @@ footer a:hover{color:var(--ink)}
 <script>
 // KI-Start: KI_PUBLIC auf true setzen, dann sehen alle die KI.
 // Bis dahin: Testmodus nur für dich über startklar-bewerbung.com/?kitest (ausschalten mit ?kitest=0).
-const KI_PUBLIC=false;
+const KI_PUBLIC=true;
 const KI_LIVE=KI_PUBLIC||(()=>{try{const q=new URLSearchParams(location.search);if(q.has('kitest'))localStorage.setItem('sk_kitest',q.get('kitest')==='0'?'0':'1');return localStorage.getItem('sk_kitest')==='1'}catch(e){return false}})();
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1126,7 +1126,7 @@ async function redeem(code){
   savePlan();
 }
 function buyKI(){
-  if(STRIPE_KI_LINK){window.open(STRIPE_KI_LINK,'_blank','noopener');toast('Nach dem Bezahlen bekommst du deinen Code per E-Mail')}
+  if(STRIPE_KI_LINK){window.open(STRIPE_KI_LINK,'_blank','noopener');toast('Nach dem Bezahlen kommst du automatisch zurück und kannst sofort loslegen')}
   else if(KI_ENDPOINT)toast('Der Kauf ist bald möglich. Hast du einen Code? Dann gib ihn beim KI-Lebenslauf ein.');
   else activate('ki');
 }
@@ -1187,8 +1187,8 @@ function kiView(){
   if(!hasKI()) return `<div class="ki-head">${kiMark}<h2>KI-Lebenslauf</h2></div><p class="sub">Du erzählst in deinen eigenen Worten, die KI macht daraus einen fertigen Lebenslauf. Danach kannst du alles selbst anpassen.</p>
   ${plan.tier!=='free'?`<div class="box tip"><p>Deine KI-Nutzungen (${P.name}) sind aufgebraucht.</p></div>`:''}
   <div class="ki-opts">
-    <div class="ki-opt school"><h4>Code eingeben</h4><p>Code von deiner Schule oder aus deiner KI-Paket-E-Mail.</p><div class="code-row"><input id="codeIn" placeholder="SK-… oder KI-…" aria-label="Code"><button class="btn btn-main btn-sm" id="codeGo">Einlösen</button></div></div>
-    <div class="ki-opt pack"><h4>KI-Paket</h4><p>3 KI-Lebensläufe, kein Abo. Mit Apple Pay, PayPal oder Karte. Der Code kommt per E-Mail.</p><div class="big">1,99 €</div><button class="btn btn-ghost btn-sm" data-buy="ki">KI-Paket kaufen</button></div>
+    <div class="ki-opt school"><h4>Code eingeben</h4><p>Code von deiner Schule oder aus deinem KI-Paket.</p><div class="code-row"><input id="codeIn" placeholder="SK-… oder KI-…" aria-label="Code"><button class="btn btn-main btn-sm" id="codeGo">Einlösen</button></div></div>
+    <div class="ki-opt pack"><h4>KI-Paket</h4><p>3 KI-Lebensläufe, kein Abo. Mit Apple Pay, Google Pay oder Karte. Nach dem Bezahlen sofort freigeschaltet.</p><div class="big">1,99 €</div><button class="btn btn-ghost btn-sm" data-buy="ki">KI-Paket kaufen</button></div>
   </div>
   <p style="font-size:14px;color:var(--mute);margin:16px 0 0">Deine Schule ist noch nicht dabei? <a href="#schulen" data-close>Zeig deiner Lehrkraft diese Seite.</a> Ohne KI geht übrigens alles andere auch, kostenlos.</p>`;
   const txt=store.get('kiTxt','');
@@ -1285,6 +1285,16 @@ function lehrerView(){
   <p style="font-size:14px;color:var(--mute);margin:16px 0 0">Die Praktikumsbericht-Vorlage finden Ihre Schülerinnen und Schüler direkt im Editor.</p>`;
 }
 function printWS(k){const r=$('#print-root');r.innerHTML=`<div class="paper">${WS[k].h()}</div>`;toast('Im Druckdialog drucken oder „Als PDF speichern“ wählen');setTimeout(()=>window.print(),300)}
+let claim={st:'idle'};
+function dankeView(){
+  const head=`<div class="ki-head">${kiMark}<h2>Danke für deinen Kauf!</h2></div>`;
+  if(claim.st==='load')return head+`<p class="sub">Deine Zahlung wird geprüft …</p><div class="ki-work on"><ol><li class="now">Zahlung bei Stripe prüfen</li><li>Code erstellen</li><li>KI freischalten</li></ol></div>`;
+  if(claim.st==='ok')return head+`<p class="sub">Dein KI-Paket ist freigeschaltet. Du kannst sofort loslegen.</p>
+   <div class="box"><h4>Dein persönlicher Code</h4><p style="font:800 28px var(--head);letter-spacing:.06em;margin:4px 0 6px">${esc(claim.code)}</p><p>Noch ${claim.left} KI-Nutzungen. Schreib dir den Code auf – damit kannst du die KI auch auf einem anderen Gerät nutzen.</p></div>
+   <div class="btns"><a class="btn ki-btn" href="#tool/ki">Jetzt KI-Lebenslauf erstellen</a></div>`;
+  if(claim.st==='err')return head+`<p class="sub">Deine Zahlung ist bei uns angekommen, aber die automatische Freischaltung hat nicht geklappt.</p><div class="box tip"><p>${esc(claim.msg||'')}</p></div><p style="font-size:14.5px;color:var(--mute)">Keine Sorge: Schreib an <a href="mailto:kontakt@startklar-bewerbung.com">kontakt@startklar-bewerbung.com</a>, dann bekommst du deinen Code per E-Mail.</p>`;
+  return head+`<p class="sub">Dein KI-Paket ist bezahlt.</p><div class="box"><h4>Code schon da?</h4><p>Öffne den KI-Lebenslauf und gib deinen Code dort ein.</p><div class="btns"><a class="btn btn-main btn-sm" href="#tool/ki">Code eingeben</a></div></div><p style="font-size:14px;color:var(--mute)">Fragen? Schreib an <a href="mailto:kontakt@startklar-bewerbung.com">kontakt@startklar-bewerbung.com</a></p>`;
+}
 function openTool(id){
   const m=$('#modal'),b=$('#mbody');
   const T={
@@ -1295,7 +1305,7 @@ function openTool(id){
    email:()=>emailTool(),
    ki:()=>kiView(),
    lehrkraefte:()=>lehrerView(),
-   danke:()=>`<div class="ki-head">${kiMark}<h2>Danke für deinen Kauf!</h2></div><p class="sub">Dein KI-Paket ist bezahlt.</p><div class="box"><h4>So geht's weiter</h4><p>Deinen persönlichen KI-Code bekommst du in der Regel innerhalb von 24 Stunden per E-Mail an die Adresse, die du beim Bezahlen angegeben hast. Schau auch im Spam-Ordner nach.</p></div><div class="box"><h4>Code schon da?</h4><p>Dann öffne den KI-Lebenslauf und gib ihn dort ein.</p><div class="btns"><a class="btn btn-main btn-sm" href="#tool/ki">Code eingeben</a></div></div><p style="font-size:14px;color:var(--mute)">Nichts angekommen? Schreib an <a href="mailto:kontakt@startklar-bewerbung.com">kontakt@startklar-bewerbung.com</a></p>`,
+   danke:()=>dankeView(),
    impressum:()=>`<h2>Impressum</h2><p class="sub">Angaben gemäß § 5 DDG</p>
 <div class="box"><h4>Anbieter</h4><p>CanooStudio<br>Inhaber: Can Delibasi<br>Ludgerweg 184<br>42329 Wuppertal<br>Deutschland</p></div>
 <div class="box"><h4>Kontakt</h4><p>E-Mail: <a href="mailto:kontakt@startklar-bewerbung.com">kontakt@startklar-bewerbung.com</a><br>Anfragen von Schulen: <a href="mailto:schulen@startklar-bewerbung.com">schulen@startklar-bewerbung.com</a><br>Website: startklar-bewerbung.com</p></div>
@@ -1451,6 +1461,14 @@ function route(){
     if(h && !h.startsWith('tool/')){const el=document.getElementById(h);if(el)el.scrollIntoView()}
   }
 }
+// Rückkehr von Stripe: Zahlung prüfen und KI sofort freischalten
+(async()=>{let sid='';try{sid=new URLSearchParams(location.search).get('session_id')||''}catch(e){}
+  if(!sid||!KI_ENDPOINT)return;
+  claim={st:'load'};history.replaceState(null,'',location.pathname+'#tool/danke');
+  try{const d=await api('/claim',{session_id:sid});plan={tier:'ki',credits:d.left,code:d.code};savePlan();claim={st:'ok',code:d.code,left:d.left}}
+  catch(e){claim={st:'err',msg:e.message}}
+  if(location.hash==='#tool/danke')openTool('danke');
+})();
 addEventListener('hashchange',route);
 route();
 </script>
