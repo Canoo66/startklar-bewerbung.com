@@ -773,8 +773,10 @@ footer a:hover{color:var(--ink)}
 <div id="print-root"></div>
 
 <script>
-// KI noch nicht gestartet: false = überall "Kommt bald". Zum Start auf true setzen.
-const KI_LIVE=false;
+// KI-Start: KI_PUBLIC auf true setzen, dann sehen alle die KI.
+// Bis dahin: Testmodus nur für dich über startklar-bewerbung.com/?kitest (ausschalten mit ?kitest=0).
+const KI_PUBLIC=false;
+const KI_LIVE=KI_PUBLIC||(()=>{try{const q=new URLSearchParams(location.search);if(q.has('kitest'))localStorage.setItem('sk_kitest',q.get('kitest')==='0'?'0':'1');return localStorage.getItem('sk_kitest')==='1'}catch(e){return false}})();
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const store={get(k,d){try{const v=localStorage.getItem('sk_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('sk_'+k,JSON.stringify(v))}catch(e){}}};
@@ -1099,7 +1101,7 @@ function renderLetterPanel(){
 
 /* ---------- Pläne & KI ---------- */
 // Für GitHub Pages: URL deines Cloudflare Workers eintragen (siehe ki-worker.js). Leer = KI über Claude-Viewer.
-const KI_ENDPOINT='';
+const KI_ENDPOINT='https://startklar-ki.can-delibasi2.workers.dev';
 // Wie oft die KI pro Paket genutzt werden darf:
 // Stripe-Payment-Link für das KI-Paket (1,99 €). Leer = Demo-Modus ohne echte Zahlung.
 const STRIPE_KI_LINK='';
