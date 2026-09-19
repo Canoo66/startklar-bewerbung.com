@@ -1172,7 +1172,7 @@ function mergeKI(d,keep){
 const KI_TOPICS=[
   {k:'schule',t:'Schule',start:'Schule: ',re:/schule|klasse|gymnasium|realschule|gesamtschule|hauptschule|berufskolleg|abschluss|abi|for\b|msa/i},
   {k:'job',t:'Praktikum / Job',start:'Praktikum oder Job: ',re:/praktikum|job|arbeit|nebenjob|minijob|ferienjob|babysit|nachhilfe|zeitung|aushilfe|gearbeitet/i},
-  {k:'kann',t:'Was du gut kannst',start:'Gut kann ich: ',re:/gut in|kann gut|stärke|computer|pc|handwerk|zuverlässig|teamfähig|pünktlich|kreativ|mathe|technik/i},
+  {k:'kann',t:'Was du gut kannst',start:'Gut kann ich: ',re:/gut in|kann gut|gut kann|pünktlich|pünklich|einsatz|stärke|computer|pc|handwerk|zuverlässig|teamfähig|pünktlich|kreativ|mathe|technik/i},
   {k:'hobby',t:'Hobbys',start:'In meiner Freizeit: ',re:/hobby|hobbys|freizeit|verein|sport|fußball|musik|zocken|zeichnen|tanzen|lesen|spiele/i},
   {k:'sprache',t:'Sprachen',start:'Sprachen: ',re:/englisch|deutsch|türkisch|arabisch|russisch|polnisch|spanisch|französisch|italienisch|sprache/i}];
 const KI_STEPS=['Lese deine Angaben','Sortiere Schule und Praktika','Formuliere dein Profil','Setze alles in die Vorlage'];
@@ -1406,7 +1406,7 @@ function bindTool(id){
         clearInterval(iv);W.classList.remove('on');
         if(err&&(err.status===402||err.status===403)){plan={tier:'free',credits:0};savePlan();b.innerHTML=kiView();toast(err.message);return}
         t.disabled=false;t.textContent='Nochmal versuchen';
-        $('#kiMsg').innerHTML=`<div class="box tip" style="margin-top:14px"><p>${esc((err&&err.message)||'Das hat nicht geklappt.')} Deine KI-Nutzung wurde nicht verbraucht.</p></div>`;
+        $('#kiMsg').innerHTML=`<div class="box tip" style="margin-top:14px"><p>${esc((err&&err.message)||'Das hat nicht geklappt.')}${/verbraucht/.test((err&&err.message)||'')?'':' Deine KI-Nutzung wurde nicht verbraucht.'}</p></div>`;
       }
     };
   }
