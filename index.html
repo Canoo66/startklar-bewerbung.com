@@ -863,13 +863,13 @@ const ICON={
  send:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>'
 };
 const TOOLS=[
- {id:'lebenslauf',big:1,ico:'doc',t:'Lebenslauf-Generator',d:'Tabellarischer Lebenslauf mit Live-Vorschau, drei Vorlagen und Formulierungen speziell für Schüler.',tag:'Kostenlos'},
+ {id:'lebenslauf',big:1,ico:'doc',t:'Lebenslauf-Generator',d:'Tabellarischer Lebenslauf mit Live-Vorschau, sechs Vorlagen und Formulierungen speziell für Schüler.',tag:'Kostenlos'},
  {id:'anschreiben',ico:'mail',bg:'#FFF1E3',c:'#DB6C0B',t:'Anschreiben',d:'Wähle Art und Stärken – der Text schreibt sich fast von selbst.',tag:'Kostenlos'},
  {id:'bericht',ico:'doc',bg:'#FFF1E3',c:'#DB6C0B',t:'Praktikumsbericht',d:'Deckblatt, Tagesberichte und Fazit – mit Leitfragen, damit dir immer was einfällt.',tag:'Kostenlos'},
  {id:'tool/staerken',ico:'star',bg:'#EAF0FF',c:'#2F5BEA',t:'Stärken-Finder',d:'8 Fragen, danach weißt du, welche Berufe zu dir passen.',tag:'Kostenlos'},
  {id:'tool/interview',ico:'chat',bg:'#E6F7F0',c:'#17A673',t:'Gesprächs-Trainer',d:'Die 12 häufigsten Fragen mit Tipps, Beispielantworten und Timer.',tag:'Kostenlos'},
  {id:'tool/check',ico:'list',bg:'#F3EDFF',c:'#7C3AED',t:'Bewerbungs-Checkliste',d:'Nichts vergessen – vom Dateinamen bis zum Handy auf lautlos.',tag:'Kostenlos'},
- {id:'tool/ki',ico:'spark',ki:1,c:'#7C3AED',t:'KI-Lebenslauf',d:'Erzähl einfach drauflos – die KI macht daraus einen fertigen Lebenslauf.',tag:KI_LIVE?'1,99 € – oder gratis mit Schulcode':'Kommt bald',pro:1,wide:1},
+ {id:'tool/ki',ico:'spark',ki:1,c:'#7C3AED',t:'KI-Lebenslauf',d:'Erzähl einfach drauflos – die KI macht daraus einen fertigen Lebenslauf.',tag:KI_LIVE?'1,99 € – oder gratis mit Schulcode':'Kommt bald',pro:1},
  {id:'tool/email',ico:'send',bg:'#FFE9EE',c:'#E11D48',t:'E-Mail-Bewerbung',d:'Betreff und Mailtext, die nicht im Spam-Gefühl landen.',tag:'Kostenlos'},
  {id:'tool/noten',ico:'calc',bg:'#EEF2F6',c:'#334155',t:'Notenschnitt-Rechner',d:'Rechne deinen Schnitt fürs Zeugnis aus.',tag:'Kostenlos'}
 ];
@@ -1109,6 +1109,7 @@ const PLANS={free:{name:'Kostenlos',ki:0},ki:{name:'KI-Paket',ki:3},schule:{name
 // Codes: SK-… = Schule (KI unbegrenzt), KI-… = KI-Paket (3 Nutzungen). Mit KI_ENDPOINT prüft der Worker, sonst Demo.
 let plan=Object.assign({tier:'free',credits:0},store.get('plan',{}));
 if(!PLANS[plan.tier])plan={tier:'free',credits:0};
+if(KI_ENDPOINT&&plan.code==='DEMO')plan={tier:'free',credits:0};
 const hasKI=()=>plan.tier==='schule'||plan.credits>0;
 function updCred(){const c=$('#kiCred');if(c)c.textContent=!KI_LIVE?'bald':plan.tier==='schule'?'∞':plan.credits}
 async function api(path,body){
@@ -1126,6 +1127,7 @@ async function redeem(code){
 }
 function buyKI(){
   if(STRIPE_KI_LINK){window.open(STRIPE_KI_LINK,'_blank','noopener');toast('Nach dem Bezahlen bekommst du deinen Code per E-Mail')}
+  else if(KI_ENDPOINT)toast('Der Kauf ist bald möglich. Hast du einen Code? Dann gib ihn beim KI-Lebenslauf ein.');
   else activate('ki');
 }
 function savePlan(){store.set('plan',plan);updCred()}
